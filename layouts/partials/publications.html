@@ -11,34 +11,77 @@
     {{ if $conferences }}
     <h3 class="publication-group-title">Conference Papers</h3>
     <div class="publication-list">
-      {{ range $conferences }}
-      {{ partial "publication-entry.html" . }}
+      {{ range $i, $pub := $conferences }}
+      <div class="publication-item{{ if ge $i 3 }} publication-item--hidden{{ end }}" id="pub-{{ $pub.title | urlize }}">
+        {{ partial "publication-entry-inner.html" $pub }}
+      </div>
       {{ end }}
     </div>
+    {{ if gt (len $conferences) 3 }}
+    <button class="pub-show-more" onclick="togglePubs(this)">
+      <span class="pub-show-more-label">Show all {{ len $conferences }} papers</span>
+      <svg class="pub-show-more-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    {{ end }}
     {{ end }}
 
     {{ if $chapters }}
     <h3 class="publication-group-title">Book Chapters</h3>
     <div class="publication-list">
-      {{ range $chapters }}
-      {{ partial "publication-entry.html" . }}
+      {{ range $i, $pub := $chapters }}
+      <div class="publication-item{{ if ge $i 3 }} publication-item--hidden{{ end }}" id="pub-{{ $pub.title | urlize }}">
+        {{ partial "publication-entry-inner.html" $pub }}
+      </div>
       {{ end }}
     </div>
+    {{ if gt (len $chapters) 3 }}
+    <button class="pub-show-more" onclick="togglePubs(this)">
+      <span class="pub-show-more-label">Show all {{ len $chapters }} chapters</span>
+      <svg class="pub-show-more-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    {{ end }}
     {{ end }}
 
     {{ if $journals }}
     <h3 class="publication-group-title">Journal Articles</h3>
     <div class="publication-list">
-      {{ range $journals }}
-      {{ partial "publication-entry.html" . }}
+      {{ range $i, $pub := $journals }}
+      <div class="publication-item{{ if ge $i 3 }} publication-item--hidden{{ end }}" id="pub-{{ $pub.title | urlize }}">
+        {{ partial "publication-entry-inner.html" $pub }}
+      </div>
       {{ end }}
     </div>
+    {{ if gt (len $journals) 3 }}
+    <button class="pub-show-more" onclick="togglePubs(this)">
+      <span class="pub-show-more-label">Show all {{ len $journals }} articles</span>
+      <svg class="pub-show-more-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    {{ end }}
     {{ end }}
 
   </div>
 </section>
 
 <script>
+function togglePubs(btn) {
+  const list = btn.previousElementSibling;
+  const hidden = list.querySelectorAll('.publication-item--hidden');
+  const label = btn.querySelector('.pub-show-more-label');
+  const isExpanded = btn.classList.contains('expanded');
+
+  hidden.forEach(el => {
+    el.classList.toggle('publication-item--visible');
+  });
+
+  btn.classList.toggle('expanded');
+  if (isExpanded) {
+    label.textContent = label.dataset.showText;
+  } else {
+    label.dataset.showText = label.textContent;
+    label.textContent = 'Show less';
+  }
+}
+
 function copyBibtex(btn) {
   const bibtex = btn.getAttribute('data-bibtex');
   navigator.clipboard.writeText(bibtex).then(() => {

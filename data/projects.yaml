@@ -1,19 +1,72 @@
-- title: "Project Alpha"
-  description: "A distributed task scheduling system designed for high-availability cloud environments."
-  tags: ["Go", "Kubernetes", "gRPC"]
-  url: "https://github.com/gadorneles/project-alpha"
+- title: "OpenRob"
+  role: "Tech Lead"
+  period: "Jan 2026 - Present"
+  status: "ongoing"
+  description: "A mobile manipulation robot prototype guided by language and vision, capable of planning and executing tasks in human-designed environments."
+  highlights:
+    - "Developing an integrated system combining large language models with visual perception for task planning and execution in unstructured environments."
+    - "Designing the full software stack for autonomous mobile manipulation, from high-level reasoning to low-level motor control."
+  tags: ["Physical AI", "Computer Vision", "LLMs", "Mobile Manipulation"]
+  links:
+    - label: "Github"
+      url: "https://github.com/OpenRob-FURG"
+  # video: "https://www.youtube.com/embed/VIDEO_ID"
+  related_publications:
 
-- title: "Project Beta"
-  description: "An open-source CLI tool for automating development workflows and CI/CD pipelines."
-  tags: ["Python", "Docker", "GitHub Actions"]
-  url: "https://github.com/gadorneles/project-beta"
+- title: "iCrane"
+  role: "Robotics Software Engineer"
+  period: "Oct 2022 - Present"
+  status: "ongoing"
+  description: "An R&D project developing an automated crane to assist operators on Petrobras' Floating Production Storage and Offloading (FPSO) units."
+  highlights:
+    - "Built a Digital Twin of the FPSO in NVIDIA Isaac Sim, integrating contributions from multiple teams into a high-fidelity simulation environment."
+    - "Developed ROS2 packages for real-time 3D scene understanding using RGB-D cameras and LiDARs, enabling collision avoidance between crane payloads and surrounding obstacles."
+    - "Implemented and optimized computer vision algorithms on embedded systems, doubling baseline frame rate performance on NVIDIA Jetson platforms."
+  tags: ["ROS2", "NVIDIA Isaac Sim", "Computer Vision", "LiDAR", "Digital Twin", "Embedded Systems"]
+  links: []
+  # video: "https://www.youtube.com/embed/VIDEO_ID"
+  related_publications:
+    - "Benchmarking Digital Twins for Tower Cranes: Isaac Sim vs. Gazebo"
+    - "Performance-watt analysis of GPU-based digital twin simulations"
 
-- title: "Project Gamma"
-  description: "A real-time monitoring dashboard for microservice architectures with alerting capabilities."
-  tags: ["TypeScript", "React", "Prometheus"]
-  url: "https://github.com/gadorneles/project-gamma"
+- title: "FBOT Robotics Team — RoboCup@Home"
+  role: "Team Member & Researcher"
+  period: "Mar 2023 - Present"
+  status: "ongoing"
+  description: "Development of the domestic robots DoRIS and BORIS for the RoboCup@Home competition, aiming to set a benchmark for comparing General Purpose Service Robots in domestic environments."
+  highlights:
+    - "Worked across multiple areas of domestic robotics including ROS2 computer vision, robotic manipulation, 3D scene understanding, human-robot interaction, and general-purpose task planning and execution."
+    - "Contributed to 6 published papers spanning robotic manipulation, LLM-based task planning, and computer vision as part of the FBOT Research division."
+    - "Served as Program Committee Member for the RoboCup Symposium in 2025 and 2026, contributing to peer review of technical submissions."
+    - "Mentored undergraduate students through their first research projects, several of whom have gone on to publish and present their own work."
+  tags: []
+  links:
+    - label: "GitHub"
+      url: "https://github.com/fbotathome"
+    - label: "Youtube"
+      url: "https://www.youtube.com/@equipederoboticafbot1808/videos"
+  # video: "https://www.youtube.com/embed/VIDEO_ID"
+  awards:
+    - "1st place — Latin America Robotics Competition (LARC 2023)"
+    - "1st place — Brazilian Robotics Competition (CBR 2024)"
+    - "7th place — RoboCup Salvador 2025"
+    - "1st place — Brazilian Robotics Competition (CBR 2025)"
+  related_publications:
+    - "AffordGen: Affordance-Based Dataset Generator for Robot Manipulation Learning"
+    - "Digital Environment Description and Reconstruction Using Panoptic Segmentation"
+    - "Review of Surface Reconstruction: From Classical Methods to Neural Radiance Fields"
+    - "SHARK: Stable hoverboard-driven autonomous robot kit"
 
-- title: "Project Delta"
-  description: "A research prototype for efficient resource allocation algorithms in edge computing."
-  tags: ["Rust", "WebAssembly"]
-  url: "https://github.com/gadorneles/project-delta"
+- title: "Robot Gardener"
+  role: "Robotics Software Engineer"
+  period: "Mar 2024 - Dec 2025"
+  status: "past"
+  description: "An R&D project in partnership with STIHL, focused on developing an autonomous mobile platform to locate and eliminate lawn weeds."
+  highlights:
+    - "Designed the software architecture and custom ROS2 packages for an autonomous outdoor mobile robot integrating navigation, weed detection, targeting, and elimination."
+    - "Developed solutions for identifying invasive plants through 2D image segmentation, transforming positional data into 3D world coordinates to guide a cartesian actuator."
+    - "Led the robotics team with strategic planning, task delegation, and organized robot field tests to validate system performance in real environments."
+  tags: ["ROS2", "Computer Vision", "Autonomous Navigation", "Image Segmentation"]
+  links: []
+  # video: "https://www.youtube.com/embed/VIDEO_ID"
+  related_publications:

@@ -1,4 +1,4 @@
-<div class="publication-item">
+<div class="publication-item" id="pub-{{ .title | urlize }}">
   <div class="publication-title">
     {{ if .url }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>{{ else }}{{ .title }}{{ end }}
   </div>

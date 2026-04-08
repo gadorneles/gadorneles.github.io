@@ -12,10 +12,10 @@ title = "Gabriel Dorneles"
   scholar = "https://scholar.google.com/citations?hl=en&user=OHKN_DwAAAAJ"
   profileImage = "/images/profile.jpg"
   interests = [
-    "Robotics",
-    "Automation",
-    "Mobile Robots",
-    "Digital Twins",
+    "Physical AI",
+    "Mobile Manipulation",
     "Computer Vision",
-    "R&D",
+    "Digital Twins & Simulation",
+    "Domestic Robotics",
+    "Task Planning",
   ]

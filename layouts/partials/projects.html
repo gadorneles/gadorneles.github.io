@@ -1,22 +1,28 @@
 <section id="projects" class="section">
   <div class="section-inner">
     <h2 class="section-title">Projects</h2>
-    <div class="project-grid">
-      {{ range .Site.Data.projects }}
-      <div class="project-card">
-        <div class="project-card-title">
-          {{ if .url }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>{{ else }}{{ .title }}{{ end }}
-        </div>
-        <p class="project-card-desc">{{ .description }}</p>
-        {{ with .tags }}
-        <div class="project-tags">
-          {{ range . }}
-          <span class="project-tag">{{ . }}</span>
-          {{ end }}
-        </div>
-        {{ end }}
-      </div>
+
+    {{ $projects := .Site.Data.projects }}
+    {{ $ongoing := where $projects "status" "ongoing" }}
+    {{ $past := where $projects "status" "past" }}
+
+    {{ if $ongoing }}
+    <h3 class="project-group-title">Ongoing</h3>
+    <div class="project-list">
+      {{ range $ongoing }}
+      {{ partial "project-card.html" . }}
       {{ end }}
     </div>
+    {{ end }}
+
+    {{ if $past }}
+    <h3 class="project-group-title">Past</h3>
+    <div class="project-list">
+      {{ range $past }}
+      {{ partial "project-card.html" . }}
+      {{ end }}
+    </div>
+    {{ end }}
+
   </div>
 </section>

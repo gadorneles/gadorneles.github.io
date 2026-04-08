@@ -1,0 +1,70 @@
+<details class="project-card project-card--full">
+  <summary class="project-card-summary">
+    <div class="project-card-summary-content">
+      <div class="project-card-title">{{ .title }}</div>
+      <p class="project-card-desc">{{ .description }}</p>
+      <div class="project-card-meta">
+        <span class="project-card-role">{{ .role }}</span>
+        <span class="project-card-period">{{ .period }}</span>
+      </div>
+    </div>
+    <svg class="project-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+  </summary>
+  <div class="project-card-body">
+    {{ with .highlights }}
+    <ul class="project-highlights">
+      {{ range . }}
+      <li>{{ . }}</li>
+      {{ end }}
+    </ul>
+    {{ end }}
+    {{ with .awards }}
+    <div class="project-awards">
+      <span class="project-awards-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"/></svg>
+        Awards
+      </span>
+      <ul class="project-awards-list">
+        {{ range . }}
+        <li>{{ . }}</li>
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+    {{ with .tags }}
+    <div class="project-tags">
+      {{ range . }}
+      <span class="project-tag">{{ . }}</span>
+      {{ end }}
+    </div>
+    {{ end }}
+    {{ with .links }}
+    <div class="project-links">
+      {{ range . }}
+      <a href="{{ .url }}" target="_blank" rel="noopener" class="project-link-btn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        {{ .label }}
+      </a>
+      {{ end }}
+    </div>
+    {{ end }}
+    {{ with .related_publications }}
+    <div class="project-publications">
+      <span class="project-publications-label">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+        Related Publications
+      </span>
+      <ul class="project-publications-list">
+        {{ range . }}
+        <li><a href="#pub-{{ . | urlize }}">{{ . }}</a></li>
+        {{ end }}
+      </ul>
+    </div>
+    {{ end }}
+    {{ with .video }}
+    <div class="project-video">
+      <iframe src="{{ . }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    {{ end }}
+  </div>
+</details>
