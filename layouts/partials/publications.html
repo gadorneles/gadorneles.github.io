@@ -9,7 +9,7 @@
     {{ $journals := where $pubs "type" "journal" }}
 
     {{ if $conferences }}
-    <h3 class="publication-group-title">Conference Papers</h3>
+    <h3 class="publication-group-title">Conference Proceedings</h3>
     <div class="publication-list">
       {{ range $i, $pub := $conferences }}
       <div class="publication-item{{ if ge $i 3 }} publication-item--hidden{{ end }}" id="pub-{{ $pub.title | urlize }}">
