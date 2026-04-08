@@ -4,17 +4,18 @@ title = "Gabriel Dorneles"
 
 [params]
   name = "Gabriel Dorneles"
-  title = "Software Engineer"
-  bio = "Passionate about building elegant solutions to complex problems. Experienced in software development, with interests in distributed systems, open source, and developer tooling."
-  email = "your.email@example.com"
+  title = "Automation Engineer"
+  bio = "Automation Engineer with passion for robotics and hands-on experience as a researcher in multiple R&D projects, including the development of an outdoor mobile robot for gardening tasks in collaboration with STIHL, and the creation of a digital twin of an FPSO in partnership with Petrobras. Currently a master's student and robotics developer with the FBOT Robotics Team in the @Home category, working on autonomous solutions for domestic challenges."
+  email = "gdorneles@furg.br"
   github = "https://github.com/gadorneles"
-  linkedin = "https://linkedin.com/in/yourprofile"
-  scholar = "https://scholar.google.com/citations?user=yourID"
+  linkedin = "https://www.linkedin.com/in/gdorneles"
+  scholar = "https://scholar.google.com/citations?hl=en&user=OHKN_DwAAAAJ"
   profileImage = "/images/profile.jpg"
   interests = [
-    "Distributed Systems",
-    "Software Engineering",
-    "Cloud Computing",
-    "Open Source",
-    "Developer Tooling",
+    "Robotics",
+    "Automation",
+    "Mobile Robots",
+    "Digital Twins",
+    "Computer Vision",
+    "R&D",
   ]
