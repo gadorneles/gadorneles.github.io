@@ -1,0 +1,20 @@
+baseURL = "https://gdorneles.github.io/"
+languageCode = "en-us"
+title = "Gabriel Dorneles"
+
+[params]
+  name = "Gabriel Dorneles"
+  title = "Software Engineer"
+  bio = "Passionate about building elegant solutions to complex problems. Experienced in software development, with interests in distributed systems, open source, and developer tooling."
+  email = "your.email@example.com"
+  github = "https://github.com/gadorneles"
+  linkedin = "https://linkedin.com/in/yourprofile"
+  scholar = "https://scholar.google.com/citations?user=yourID"
+  profileImage = "/images/profile.jpg"
+  interests = [
+    "Distributed Systems",
+    "Software Engineering",
+    "Cloud Computing",
+    "Open Source",
+    "Developer Tooling",
+  ]

@@ -1,0 +1,19 @@
+- title: "Project Alpha"
+  description: "A distributed task scheduling system designed for high-availability cloud environments."
+  tags: ["Go", "Kubernetes", "gRPC"]
+  url: "https://github.com/gadorneles/project-alpha"
+
+- title: "Project Beta"
+  description: "An open-source CLI tool for automating development workflows and CI/CD pipelines."
+  tags: ["Python", "Docker", "GitHub Actions"]
+  url: "https://github.com/gadorneles/project-beta"
+
+- title: "Project Gamma"
+  description: "A real-time monitoring dashboard for microservice architectures with alerting capabilities."
+  tags: ["TypeScript", "React", "Prometheus"]
+  url: "https://github.com/gadorneles/project-gamma"
+
+- title: "Project Delta"
+  description: "A research prototype for efficient resource allocation algorithms in edge computing."
+  tags: ["Rust", "WebAssembly"]
+  url: "https://github.com/gadorneles/project-delta"

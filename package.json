@@ -1,0 +1,11 @@
+{
+  "name": "gdorneles.github.io",
+  "private": true,
+  "scripts": {
+    "dev": "hugo server -D",
+    "build": "hugo --gc --minify"
+  },
+  "devDependencies": {
+    "hugo-extended": "0.147.0"
+  }
+}

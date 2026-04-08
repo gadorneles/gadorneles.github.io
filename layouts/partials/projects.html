@@ -1,0 +1,22 @@
+<section id="projects" class="section">
+  <div class="section-inner">
+    <h2 class="section-title">Projects</h2>
+    <div class="project-grid">
+      {{ range .Site.Data.projects }}
+      <div class="project-card">
+        <div class="project-card-title">
+          {{ if .url }}<a href="{{ .url }}" target="_blank" rel="noopener">{{ .title }}</a>{{ else }}{{ .title }}{{ end }}
+        </div>
+        <p class="project-card-desc">{{ .description }}</p>
+        {{ with .tags }}
+        <div class="project-tags">
+          {{ range . }}
+          <span class="project-tag">{{ . }}</span>
+          {{ end }}
+        </div>
+        {{ end }}
+      </div>
+      {{ end }}
+    </div>
+  </div>
+</section>

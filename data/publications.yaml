@@ -1,0 +1,38 @@
+- title: "A Novel Approach to Distributed Task Scheduling"
+  authors: "G. Dorneles, A. Silva, M. Santos"
+  venue: "International Conference on Software Engineering (ICSE)"
+  year: 2024
+  url: "https://doi.org/10.1000/example1"
+  bibtex: |
+    @inproceedings{dorneles2024distributed,
+      title={A Novel Approach to Distributed Task Scheduling},
+      author={Dorneles, G. and Silva, A. and Santos, M.},
+      booktitle={International Conference on Software Engineering (ICSE)},
+      year={2024}
+    }
+
+- title: "Efficient Resource Allocation in Cloud Environments"
+  authors: "G. Dorneles, B. Oliveira"
+  venue: "Journal of Systems and Software"
+  year: 2023
+  url: "https://doi.org/10.1000/example2"
+  bibtex: |
+    @article{dorneles2023efficient,
+      title={Efficient Resource Allocation in Cloud Environments},
+      author={Dorneles, G. and Oliveira, B.},
+      journal={Journal of Systems and Software},
+      year={2023}
+    }
+
+- title: "Towards Scalable Microservice Architectures"
+  authors: "G. Dorneles, C. Ferreira, D. Lima"
+  venue: "IEEE International Conference on Cloud Computing"
+  year: 2023
+  url: "https://doi.org/10.1000/example3"
+  bibtex: |
+    @inproceedings{dorneles2023scalable,
+      title={Towards Scalable Microservice Architectures},
+      author={Dorneles, G. and Ferreira, C. and Lima, D.},
+      booktitle={IEEE International Conference on Cloud Computing},
+      year={2023}
+    }
