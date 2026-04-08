@@ -2,6 +2,7 @@
   <summary class="project-card-summary">
     <div class="project-card-summary-content">
       <div class="project-card-title">{{ .title }}</div>
+      {{ with .affiliation }}<div class="project-card-affiliation">{{ . }}</div>{{ end }}
       <p class="project-card-desc">{{ .description }}</p>
       <div class="project-card-meta">
         <span class="project-card-role">{{ .role }}</span>

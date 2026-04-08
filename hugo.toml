@@ -14,8 +14,16 @@ title = "Gabriel Dorneles"
   interests = [
     "Physical AI",
     "Mobile Manipulation",
-    "Computer Vision",
     "Digital Twins & Simulation",
     "Domestic Robotics",
     "Task Planning",
   ]
+  [[params.languages]]
+    name = "Portuguese"
+    level = "Native"
+  [[params.languages]]
+    name = "English"
+    level = "Fluent"
+  [[params.languages]]
+    name = "Japanese"
+    level = "Conversational"
