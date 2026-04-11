@@ -42,7 +42,7 @@
   period: "Mar 2023 - Present"
   status: "ongoing"
   images:
-    - "/images/fbot.jpeg"
+    - "/images/fbot-1.jpeg"
     - "/images/fbot-2.jpeg"
   description: "Development of the domestic robots DoRIS and BORIS for the RoboCup@Home competition, aiming to set a benchmark for comparing General Purpose Service Robots in domestic environments."
   highlights:
