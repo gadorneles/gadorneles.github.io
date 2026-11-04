@@ -1,3 +1,19 @@
+- title: "Viability Assessment of Digital Twinning for Safety-Critical Industrial Applications: Tower Crane Case Study"
+  authors: "Juliana Dos Santos, Gabriel Dorneles, Murilo Bicho, Tony Froes, Richard De Assis, Pedro Edom, Marcos Rodrigues, Eder Gonçalves, Marcelo Pias, Silvia Botelho"
+  venue: "IEEE Access"
+  year: 2026
+  type: "journal"
+  url: "https://ieeexplore.ieee.org/document/11754930"
+  note: "Early Access"
+  bibtex: |
+    @ARTICLE{11754930,
+      author={Dos Santos, Juliana and Dorneles, Gabriel and Bicho, Murilo and Froes, Tony and De Assis, Richard and Edom, Pedro and Rodrigues, Marcos and Gonçalves, Eder and Pias, Marcelo and Botelho, Silvia},
+      journal={IEEE Access},
+      title={Viability Assessment of Digital Twinning for Safety-Critical Industrial Applications: Tower Crane Case Study},
+      year={2026},
+      pages={1-1},
+      doi={10.1109/ACCESS.2026.3747443}}
+
 - title: "BORISAgent: An Architecture for LLM-Based Task Planning in Domestic Service Robots"
   authors: "Gabriel A. Dorneles, Richard J. C. Assis, Cris L. Froes, Enrico F. Torres, Vitor W. Anello, Guilherme M. Burkert, Murilo C. Bicho, Alisson H. Kolling, Rodrigo S. Guerra, Paulo L. J. Drews-Jr"
   venue: "RoboCup 2026: Robot World Cup XXIX. Lecture Notes in Computer Science. Springer, Cham."
