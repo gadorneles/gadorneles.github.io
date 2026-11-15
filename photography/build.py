@@ -358,12 +358,14 @@ def normalize_place(place: dict, aliases: dict) -> tuple[str | None, str | None]
     if not name:
         return None, None
     area = name
+    if place.get("cc") == "KR":
+        name = re.sub(r"-(si|gun)$", "", name)  # "Bucheon-si" -> "Bucheon"
     if place.get("cc") == "JP":
         name = re.sub(r"-shi$", "", name)  # "Nara-shi" -> "Nara"
         if name.endswith("-ku") and place.get("admin1") in JP_WARD_CITIES:
             name = place["admin1"]  # "Kamigyo-ku" -> "Kyoto"
     name = aliases.get(name, aliases.get(area, name))
-    return name, (area if re.sub(r"-shi$", "", area) != name else None)
+    return name, (area if re.sub(r"-(shi|si|gun)$", "", area) != name else None)
 
 
 _STATES: dict[str, list] = {}
@@ -487,8 +489,21 @@ def find_state(cc: str | None, lat: float, lon: float, hint: str | None = None) 
     return best
 
 
+PLACE_SPLIT = re.compile(r"\s+(?:and|&|e|y|\+)\s+|\s*[,/]\s*", re.IGNORECASE)
+
+
 def lookup_place(name: str, cc: str | None) -> tuple[float, float] | None:
-    """Album folder name -> coordinates: a city ('João Pessoa') or a state ('Paraíba')."""
+    """Folder name -> coordinates: a city ('João Pessoa'), a state ('Paraíba'), or the first
+    known one in a list ('Incheon and Seoul', 'Lisboa & Porto', 'Rio e Niterói')."""
+    hit = _lookup_one(name, cc)
+    if hit is None:
+        for part in PLACE_SPLIT.split(name):
+            if part.strip() and (hit := _lookup_one(part, cc)):
+                break
+    return hit
+
+
+def _lookup_one(name: str, cc: str | None) -> tuple[float, float] | None:
     key = norm_name(name)
     hits = [r for r in cities_table() if norm_name(r["name"]) == key and (not cc or r["cc"] == cc)]
     if hits:  # prefer the city that also names its district/state (the capital, not a namesake village)
@@ -930,7 +945,7 @@ def main() -> None:
                         counts["encoded"] += 1
             log(f"  encoded {sum(1 for e in todo if e['rec'])} new or changed")
 
-        trip_photos = []
+        trip_photos, sub_places = [], {}
         for e in entries:
             rec = e["rec"]
             if rec is None:
@@ -952,6 +967,12 @@ def main() -> None:
             loc, loc_src = resolve_location(ov.get("location"), f"{key}/{rel}", trip_cc), "manual"
             if not loc and ex["lat"] is not None and ex["lon"] is not None and not (ex["lat"] == 0 and ex["lon"] == 0):
                 loc, loc_src = (ex["lat"], ex["lon"]), "gps"
+            if not loc and "/" in rel:  # a subfolder named after a city: .../2026/Seoul/x.jpg
+                sub = rel.rsplit("/", 1)[0].split("/")[-1]
+                if sub not in sub_places:
+                    sub_places[sub] = lookup_place(sub, trip_cc)
+                if sub_places[sub]:
+                    loc, loc_src = sub_places[sub], "folder"
             if not loc and fallback:
                 loc, loc_src = fallback, "trip"
             if not loc and not tc.get("hide_on_map"):
@@ -1005,7 +1026,7 @@ def main() -> None:
         title = str(tc.get("title") or d["title"])
         countries_ = [country_name(cc) for cc, _ in cc_counts.most_common()]
         top_state = state_counts.most_common(1)[0][0] if state_counts else None
-        states_ = [top_state] if top_state and norm_name(top_state) != norm_name(title) else []
+        states_ = [top_state] if top_state and norm_name(top_state) not in norm_name(title) else []
         if title in countries_ or title.startswith(tuple(f"{c} " for c in countries_)):
             subtitle = ", ".join(c for c, _ in city_counts.most_common(2))  # "Japan 2025" -> "Kyoto, Tokyo"
         elif len(countries_) == 1:
@@ -1061,8 +1082,9 @@ def main() -> None:
     log(f"{t['photos']} photos, {t['trips']} albums, {t['countries']} countries, {t['states']} states, "
         f"{t['cities']} places")
     src_count = Counter(p["loc_src"] for p in photos)
-    log(f"Map locations: {src_count.get('gps', 0)} from GPS, {src_count.get('trip', 0)} from trip fallback, "
-        f"{src_count.get('manual', 0)} manual, {len(no_location)} without location")
+    log(f"Map locations: {src_count.get('gps', 0)} from GPS, {src_count.get('folder', 0)} from city subfolders, "
+        f"{src_count.get('trip', 0)} from the album's place, {src_count.get('manual', 0)} manual, "
+        f"{len(no_location)} without location")
     if no_location:
         log("\nNot on the map (no GPS). Add `location: City` to that trip's trip.yaml to place them:")
         for k in no_location[:40]:

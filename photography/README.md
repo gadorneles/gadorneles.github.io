@@ -26,6 +26,11 @@ Google Drive
 ```
 
 Albums are listed newest first, each with its dates (for example "Jan 2026").
+
+One trip to several cities: name the place folder after all of them, e.g.
+`South Korea/Incheon and Seoul/2026/` ("and", "&", "e", "," all work). Optionally put each day's
+photos in a subfolder named after its city (`.../2026/Seoul/`), so photos without GPS land on the
+right city instead of the first one in the name.
 The place folder name is looked up offline (cities with over 1,000 people, and state names), so
 photos without GPS still land on the map at that place. Photos with GPS keep their own spot.
 
