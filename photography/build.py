@@ -468,18 +468,20 @@ def find_state(cc: str | None, lat: float, lon: float, hint: str | None = None) 
                     return f[0]
         return None
 
-    if hint:
+    if hint:  # an exact name match is the most reliable (e.g. Manhattan, next to New Jersey)
         h = norm_name(hint)
         exact = [f for f in feats if h in f[3]]
         if len(exact) == 1:
             return exact[0][0]
-        partial = exact or [f for f in feats if any(len(a) >= 4 and (a in h or h in a) for a in f[3])]
+        if exact and (hit := containing(exact)):
+            return hit
+    if hit := containing(feats):  # otherwise, the shape the point falls in
+        return hit
+    if hint:  # off the simplified coastline: a state whose name is part of the hint
+        h = norm_name(hint)
+        partial = [f for f in feats if any(len(a) >= 4 and (a in h or h in a) for a in f[3])]
         if len(partial) == 1:
             return partial[0][0]
-        if partial and (hit := containing(partial)):
-            return hit
-    if hit := containing(feats):
-        return hit
     best, best_d = None, 0.5 ** 2  # coastline photos: nearest state within ~50 km
     for name, (x0, y0, x1, y1), rings, _ in feats:
         if x0 - 0.5 <= lon <= x1 + 0.5 and y0 - 0.5 <= lat <= y1 + 0.5:
