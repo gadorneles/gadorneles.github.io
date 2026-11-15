@@ -1,30 +1,48 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{{ .Site.Title }}</title>
-  <meta name="description" content="{{ .Site.Params.bio }}">
+  {{ $isPhoto := eq .Section "photography" }}
+  {{ $title := cond .IsHome .Site.Title (printf "%s · %s" .Title .Site.Title) }}
+  {{ $desc := .Site.Params.bio | plainify }}
+  {{ if $isPhoto }}{{ $desc = .Params.description | default (.Summary | plainify) | default "Travel and street photography." }}{{ end }}
+  {{ $ogImage := printf "%s%s" .Site.BaseURL (strings.TrimPrefix "/" .Site.Params.profileImage) }}
+  {{ if and $isPhoto site.Data.photography }}
+    {{ $base := site.Params.photography.imageBase | default "/photos" }}
+    {{ $cover := "" }}
+    {{ range site.Data.photography.trips }}{{ if and (not $cover) (or (eq $.Kind "section") (eq .slug $.Params.trip)) }}{{ $cover = .cover.src }}{{ end }}{{ end }}
+    {{ with $cover }}{{ $ogImage = printf "%s/%s" $base . | absURL }}{{ end }}
+  {{ end }}
+  <title>{{ $title }}</title>
+  <meta name="description" content="{{ $desc }}">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website">
-  <meta property="og:title" content="{{ .Site.Title }}">
-  <meta property="og:description" content="{{ .Site.Params.bio }}">
-  <meta property="og:url" content="{{ .Site.BaseURL }}">
-  <meta property="og:image" content="{{ .Site.BaseURL }}{{ strings.TrimPrefix "/" .Site.Params.profileImage }}">
+  <meta property="og:title" content="{{ $title }}">
+  <meta property="og:description" content="{{ $desc }}">
+  <meta property="og:url" content="{{ .Permalink }}">
+  <meta property="og:image" content="{{ $ogImage }}">
   <meta property="og:locale" content="en_US">
 
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="{{ .Site.Title }}">
-  <meta name="twitter:description" content="{{ .Site.Params.bio }}">
-  <meta name="twitter:image" content="{{ .Site.BaseURL }}{{ strings.TrimPrefix "/" .Site.Params.profileImage }}">
+  <meta name="twitter:card" content="{{ cond $isPhoto "summary_large_image" "summary" }}">
+  <meta name="twitter:title" content="{{ $title }}">
+  <meta name="twitter:description" content="{{ $desc }}">
+  <meta name="twitter:image" content="{{ $ogImage }}">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   {{ $css := resources.Get "css/main.css" | minify | fingerprint }}
   <link rel="stylesheet" href="{{ $css.RelPermalink }}">
+  {{ if $isPhoto }}
+  <link rel="stylesheet" href="{{ "vendor/leaflet/leaflet.css" | relURL }}">
+  <link rel="stylesheet" href="{{ "vendor/leaflet/MarkerCluster.css" | relURL }}">
+  {{ $pcss := resources.Get "css/photography.css" | minify | fingerprint }}
+  <link rel="stylesheet" href="{{ $pcss.RelPermalink }}">
+  {{ end }}
 
   <!-- Google Scholar metadata -->
+  {{ if .IsHome }}
   {{ range .Site.Data.publications }}
   <meta name="citation_title" content="{{ .title }}">
   {{ $authors := split .authors ", " }}
@@ -34,5 +52,6 @@
   <meta name="citation_publication_date" content="{{ .year }}">
   {{ with .venue }}<meta name="citation_conference_title" content="{{ . }}">{{ end }}
   {{ with .pdf }}<meta name="citation_pdf_url" content="{{ $.Site.BaseURL }}{{ strings.TrimPrefix "/" . }}">{{ end }}
+  {{ end }}
   {{ end }}
 </head>

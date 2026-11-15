@@ -1,0 +1,25 @@
+{{/* Vertical columns. Params: title, rows ([{label,count}]), ticks (labels to show; default all), note */}}
+{{ $max := 1 }}
+{{ range .rows }}{{ if gt .count $max }}{{ $max = .count }}{{ end }}{{ end }}
+{{ $ticks := .ticks }}
+{{ $showValues := le (len .rows) 12 }}
+<div class="ph-card">
+  <h3 class="ph-card-title">{{ .title }}</h3>
+  {{ if .rows }}
+  <div class="ph-cols{{ if not $showValues }} ph-cols--dense{{ end }}" role="list">
+    {{ range .rows }}
+    {{ $pct := div (mul (float .count) 100) $max }}
+    <div class="ph-col" role="listitem" aria-label="{{ .label }}: {{ .count }} photos" data-tip="{{ .label }} · {{ .count }}">
+      <span class="ph-col-plot">
+        {{ if $showValues }}<span class="ph-col-value">{{ if gt .count 0 }}{{ .count }}{{ end }}</span>{{ end }}
+        {{ if gt .count 0 }}<span class="ph-col-bar" style="{{ printf "height:%.2f%%" $pct | safeCSS }}"></span>{{ end }}
+      </span>
+      <span class="ph-col-label">{{ if or (not $ticks) (in $ticks .label) }}{{ .label }}{{ end }}</span>
+    </div>
+    {{ end }}
+  </div>
+  {{ with .note }}<p class="ph-card-note">{{ . }}</p>{{ end }}
+  {{ else }}
+  <p class="ph-empty-note">No dates yet.</p>
+  {{ end }}
+</div>

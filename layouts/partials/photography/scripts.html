@@ -1,0 +1,16 @@
+{{/* Params: page, mode ("index" | "trip"), trip (slug) */}}
+{{ $base := site.Params.photography.imageBase | default "/photos" }}
+<div id="ph-app" hidden
+  data-mode="{{ .mode }}"
+  data-trip="{{ .trip }}"
+  data-json="{{ partial "photography/data-url.html" . }}"
+  data-base="{{ $base }}"
+  data-carto-key="{{ site.Params.photography.cartoKey }}"
+  data-geo="{{ "vendor/world/countries-50m.topo.json" | relURL }}"
+  data-states="{{ $base }}/_states/"
+  data-trips="{{ "/photography/" | relURL }}"></div>
+<script src="{{ "vendor/leaflet/leaflet.js" | relURL }}" defer></script>
+<script src="{{ "vendor/leaflet/leaflet.markercluster.js" | relURL }}" defer></script>
+{{ if eq .mode "index" }}<script src="{{ "vendor/world/topojson-client.min.js" | relURL }}" defer></script>{{ end }}
+{{ $js := resources.Get "js/photography.js" | minify | fingerprint }}
+<script src="{{ $js.RelPermalink }}" defer></script>

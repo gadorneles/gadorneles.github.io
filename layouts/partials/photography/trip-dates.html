@@ -1,0 +1,17 @@
+{{/* "Jul 2025", "Jul – Aug 2025" or "Dec 2024 – Jan 2025" from a trip's start/end */}}
+{{ $out := .year | default "" }}
+{{ with .start }}
+  {{ $s := time.AsTime . }}
+  {{ $out = $s.Format "Jan 2006" }}
+  {{ with $.end }}
+    {{ $e := time.AsTime . }}
+    {{ if ne ($s.Format "200601") ($e.Format "200601") }}
+      {{ if eq $s.Year $e.Year }}
+        {{ $out = printf "%s – %s" ($s.Format "Jan") ($e.Format "Jan 2006") }}
+      {{ else }}
+        {{ $out = printf "%s – %s" ($s.Format "Jan 2006") ($e.Format "Jan 2006") }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+{{ return $out }}

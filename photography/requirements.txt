@@ -1,0 +1,6 @@
+Pillow>=10
+PyYAML>=6
+reverse_geocoder>=1.5
+google-auth>=2.20
+requests>=2.31
+pillow-heif>=0.16   # .heic photos from phones

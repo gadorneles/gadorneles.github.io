@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+{{ partial "head.html" . }}
+<body class="ph-page">
+  {{ partial "nav.html" . }}
+  {{ $d := site.Data.photography }}
+  {{ $base := site.Params.photography.imageBase | default "/photos" }}
+  {{ $slug := .Params.trip }}
+  {{ $trip := index (where $d.trips "slug" $slug) 0 }}
+  {{ $photos := where $d.photos "trip" $slug }}
+  {{ $located := where $photos "lat" "!=" nil }}
+  <main class="ph">
+    <header class="ph-header ph-wrap">
+      <a class="ph-back" href="{{ "/photography/" | relURL }}">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        All photography
+      </a>
+      <h1 class="ph-title">{{ .Title }}</h1>
+      <p class="ph-trip-line">
+        {{ with partial "photography/trip-dates.html" $trip }}<span>{{ . }}</span>{{ end }}
+        <span>{{ $trip.count }} photo{{ if ne $trip.count 1 }}s{{ end }}</span>
+        {{ with $trip.subtitle }}<span>{{ . }}</span>{{ end }}
+      </p>
+      {{ with .Content }}<div class="ph-intro">{{ . }}</div>{{ end }}
+    </header>
+
+    {{ if $located }}
+    <section class="ph-wrap">
+      <div id="ph-map" class="ph-map ph-map--trip" data-view="photos" tabindex="0" aria-label="Map of photo locations in {{ .Title }}"></div>
+    </section>
+    {{ end }}
+
+    <section class="ph-gallery-wrap" aria-label="Photos">
+      <div class="ph-gallery">
+        {{ range $photos }}
+        {{ $r := div (float .w) (cond (gt .h 0) .h 1) }}
+        {{ $alt := .caption }}
+        {{ if not $alt }}{{ $alt = "Photo" }}{{ with .city }}{{ $alt = printf "Photo in %s" . }}{{ end }}{{ with .country }}{{ $alt = printf "%s, %s" $alt . }}{{ end }}{{ end }}
+        <a class="ph-item" href="{{ $base }}/{{ .src }}" data-id="{{ .id }}" style="{{ printf "--r:%.4f" $r | safeCSS }}">
+          <img src="{{ $base }}/{{ .thumb }}" width="{{ .tw }}" height="{{ .th }}" alt="{{ $alt }}" loading="lazy" decoding="async">
+        </a>
+        {{ end }}
+      </div>
+    </section>
+
+    {{ $i := 0 }}{{ range $k, $t := $d.trips }}{{ if eq $t.slug $slug }}{{ $i = $k }}{{ end }}{{ end }}
+    {{ $n := len $d.trips }}
+    {{ if gt $n 1 }}
+    <nav class="ph-wrap ph-pager" aria-label="Other trips">
+      {{ if lt (add $i 1) $n }}{{ with index $d.trips (add $i 1) }}
+      <a class="ph-pager-link" href="{{ printf "/photography/%s/" .slug | relURL }}"><span class="ph-pager-dir">Older</span><span class="ph-pager-title">{{ .title }}</span><span class="ph-pager-date">{{ partial "photography/trip-dates.html" . }}</span></a>
+      {{ end }}{{ else }}<span></span>{{ end }}
+      {{ if gt $i 0 }}{{ with index $d.trips (sub $i 1) }}
+      <a class="ph-pager-link ph-pager-link--next" href="{{ printf "/photography/%s/" .slug | relURL }}"><span class="ph-pager-dir">Newer</span><span class="ph-pager-title">{{ .title }}</span><span class="ph-pager-date">{{ partial "photography/trip-dates.html" . }}</span></a>
+      {{ end }}{{ end }}
+    </nav>
+    {{ end }}
+  </main>
+  {{ partial "photography/lightbox.html" . }}
+  {{ partial "footer.html" . }}
+  {{ partial "photography/scripts.html" (dict "page" . "mode" "trip" "trip" $slug) }}
+</body>
+</html>

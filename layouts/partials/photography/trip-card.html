@@ -1,0 +1,11 @@
+{{ $base := site.Params.photography.imageBase | default "/photos" }}
+<a class="ph-trip" href="{{ printf "/photography/%s/" .slug | relURL }}">
+  <span class="ph-trip-cover">
+    <img src="{{ $base }}/{{ .cover.thumb }}" width="{{ .cover.tw }}" height="{{ .cover.th }}" alt="" loading="lazy" decoding="async">
+  </span>
+  <span class="ph-trip-body">
+    <span class="ph-trip-title">{{ .title }}</span>
+    <span class="ph-trip-meta">{{ partial "photography/trip-dates.html" . }}{{ with .subtitle }} · {{ . }}{{ end }}</span>
+    <span class="ph-trip-count">{{ .count }} photo{{ if ne .count 1 }}s{{ end }}</span>
+  </span>
+</a>

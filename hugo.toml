@@ -28,3 +28,11 @@ title = "Gabriel Dorneles"
   [[params.languages]]
     name = "Japanese"
     level = "Conversational"
+
+  # Photography section (see photography/README.md).
+  # imageBase: where published photos live. "/photos" = static/photos in this repo.
+  # To move images to a CDN/bucket later, upload static/photos there and change this URL.
+  # cartoKey: free CARTO basemaps key (carto.com/basemaps/apikey) for the map background tiles.
+  [params.photography]
+    imageBase = "/photos"
+    cartoKey = "cb1_59lh_1_fb125de40f281381c2aae8bf"

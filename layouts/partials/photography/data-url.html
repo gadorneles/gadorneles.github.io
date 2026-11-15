@@ -1,0 +1,5 @@
+{{/* Publishes the photo list once as a fingerprinted JSON file and returns its URL. */}}
+{{ $d := site.Data.photography }}
+{{ $json := dict "trips" $d.trips "photos" $d.photos | jsonify }}
+{{ $r := resources.FromString "photography/photos.json" $json | fingerprint }}
+{{ return $r.RelPermalink }}

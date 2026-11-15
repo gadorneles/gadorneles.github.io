@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+{{ partial "head.html" . }}
+<body class="ph-page">
+  {{ partial "nav.html" . }}
+  {{ $d := site.Data.photography }}
+  <main class="ph">
+    <header class="ph-header ph-wrap">
+      <h1 class="ph-title">{{ .Title }}</h1>
+      {{ with .Content }}<div class="ph-intro">{{ . }}</div>{{ end }}
+    </header>
+
+    {{ if not $d }}
+    <section class="ph-wrap">
+      <div class="ph-card ph-empty">
+        <p>No photos yet. Run <code>python photography/build.py</code> to generate <code>data/photography.json</code>.</p>
+      </div>
+    </section>
+    {{ else }}
+    {{ $t := $d.totals }}
+    <section class="ph-wrap" aria-label="Totals">
+      <dl class="ph-totals">
+        <div class="ph-total"><dt>Photos</dt><dd>{{ lang.FormatNumber 0 $t.photos }}</dd></div>
+        <div class="ph-total"><dt>Countries</dt><dd>{{ $t.countries }}</dd></div>
+        <div class="ph-total"><dt>States</dt><dd>{{ $t.states | default 0 }}</dd></div>
+        <div class="ph-total"><dt>Places</dt><dd>{{ $t.cities }}</dd></div>
+        <div class="ph-total"><dt>Albums</dt><dd>{{ $t.trips }}</dd></div>
+        {{ with $t.first_year }}
+        <div class="ph-total{{ if ne $t.first_year $t.last_year }} ph-total--range{{ end }}"><dt>Years</dt><dd>{{ if eq $t.first_year $t.last_year }}{{ . }}{{ else }}{{ . }}<span class="ph-total-sep">–</span>{{ $t.last_year }}{{ end }}</dd></div>
+        {{ end }}
+      </dl>
+    </section>
+
+    <section class="ph-wrap ph-map-section" aria-label="Map">
+      <div class="ph-map-toolbar">
+        <div class="ph-seg" role="group" aria-label="Map view">
+          <button type="button" class="ph-seg-btn" data-view="countries" aria-pressed="true">Countries</button>
+          <button type="button" class="ph-seg-btn" data-view="photos" aria-pressed="false">Photos</button>
+        </div>
+        <div class="ph-legend" id="ph-legend" aria-label="Photos per country"></div>
+      </div>
+      <div id="ph-map" class="ph-map" data-view="countries" tabindex="0" aria-label="World map of photo locations"></div>
+      {{ if lt $t.geotagged $t.photos }}
+      <p class="ph-map-note">{{ sub $t.photos $t.geotagged }} of {{ $t.photos }} photos have no location and are not on the map.</p>
+      {{ end }}
+      {{ if gt ($t.states | default 0) 0 }}
+      <p class="ph-map-note ph-map-hint">Zoom in on a country to see its states.</p>
+      {{ end }}
+    </section>
+
+    {{ $s := $d.stats }}
+    <section class="ph-wrap ph-section" aria-labelledby="ph-stats-title">
+      <h2 class="section-title" id="ph-stats-title">Stats</h2>
+      <div class="ph-stats">
+        {{ partial "photography/barlist.html" (dict "title" "Most photographed countries" "rows" $s.countries "visible" 10) }}
+        {{ partial "photography/barlist.html" (dict "title" "Most photographed states & regions" "rows" $s.states "visible" 10) }}
+        {{ partial "photography/barlist.html" (dict "title" "Most photographed places" "rows" $s.cities "visible" 11) }}
+        {{ partial "photography/columns.html" (dict "title" "Photos by year" "rows" $s.years) }}
+        {{ $hours := slice }}
+        {{ range $h, $c := $s.hours }}{{ $hours = $hours | append (dict "label" (printf "%02d" $h) "count" $c) }}{{ end }}
+        {{ partial "photography/columns.html" (dict "title" "Time of day" "rows" $hours "ticks" (slice "00" "06" "12" "18") "note" "Hour on the camera clock.") }}
+        {{ partial "photography/barlist.html" (dict "title" "Lenses" "rows" $s.lenses "empty" "No lens data in EXIF.") }}
+        {{ if $s.films }}
+        {{ partial "photography/barlist.html" (dict "title" "Film simulations" "rows" $s.films) }}
+        {{ else }}
+        {{ partial "photography/barlist.html" (dict "title" "Cameras" "rows" $s.cameras "empty" "No camera data in EXIF.") }}
+        {{ end }}
+      </div>
+    </section>
+
+    <section class="ph-wrap ph-section" aria-labelledby="ph-trips-title">
+      <h2 class="section-title" id="ph-trips-title">Albums</h2>
+      <div class="ph-trips">
+        {{ range $d.trips }}{{ partial "photography/trip-card.html" . }}{{ end }}
+      </div>
+    </section>
+    {{ end }}
+  </main>
+  {{ partial "photography/lightbox.html" . }}
+  {{ partial "footer.html" . }}
+  {{ if $d }}{{ partial "photography/scripts.html" (dict "page" . "mode" "index") }}{{ end }}
+</body>
+</html>

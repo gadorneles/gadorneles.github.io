@@ -1,0 +1,23 @@
+{{/* Horizontal bar list. Params: title, rows ([{label,count}]), visible (int, rest folds into a <details>), unit */}}
+{{ $rows := .rows }}
+{{ $max := 1 }}
+{{ range $rows }}{{ if and (ne .key "_other") (gt .count $max) }}{{ $max = .count }}{{ end }}{{ end }}
+{{ $visible := .visible | default 10 }}
+{{ $unit := .unit | default "photos" }}
+<div class="ph-card">
+  <h3 class="ph-card-title">{{ .title }}</h3>
+  {{ if $rows }}
+  <ol class="ph-bars">
+    {{ range $i, $r := $rows }}
+      {{ if eq $i $visible }}</ol><details class="ph-more"><summary>Show all {{ len $rows }}</summary><ol class="ph-bars" start="{{ add $visible 1 }}">{{ end }}
+      {{ $pct := cond (eq .key "_other") 0 (div (mul (float .count) 100) $max) }}
+      <li class="ph-bar-row{{ if eq .key "_other" }} ph-bar-row--other{{ end }}">
+        <span class="ph-bar-label" title="{{ .label }}">{{ .label }}</span>
+        <span class="ph-bar-track">{{ if gt $pct 0 }}<span class="ph-bar" style="{{ printf "width:%.2f%%" $pct | safeCSS }}"></span>{{ end }}<span class="ph-bar-value">{{ lang.FormatNumber 0 .count }}</span></span>
+      </li>
+    {{ end }}
+    {{ if gt (len $rows) $visible }}</ol></details>{{ else }}</ol>{{ end }}
+  {{ else }}
+  <p class="ph-empty-note">{{ .empty | default "No data yet." }}</p>
+  {{ end }}
+</div>
