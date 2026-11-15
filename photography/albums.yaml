@@ -1,0 +1,41 @@
+# Album titles, descriptions and covers.
+# Edit this file, then commit and push: the site rebuilds in a few minutes (no photos are re-processed).
+#
+# Each entry is an album's folder in Google Drive: Country/Place/Year.
+# Leave out the year (Country/Place) to match that place in any year.
+# The country can be written in English or Portuguese ("Spain" = "Espanha").
+# Every field is optional. Leave it empty ("") to use the default.
+#
+#   title:        name on the album card and page        (default: the place folder name)
+#   description:  text under the title on the album page (Markdown allowed: **bold**, *italic*, [link](url))
+#   cover:        file name of the photo for the album card, e.g. DSCF0412.JPG (default: first photo)
+#   trip:         false = not a trip, left out of the timeline (home towns are already excluded,
+#                 see home_places in trips.yaml)
+#
+# Less common: location, hide_on_map and per-photo fixes (photos:), see photography/README.md.
+# For a new album, copy a block and change the folder.
+
+Brazil/João Pessoa/2026:
+  title: João Pessoa
+  description: "Participated in the conference CROS 2026 in João Pessoa. It was also my first trip with my camera."
+  cover: DSCF0408.JPG
+
+South Korea/Incheon and Seoul/2026:
+  title: Incheon and Seoul
+  description: "Participated in RoboCup Incheon 2026. It was my first international trip. Stayed 3 extra days in Seoul with a few friends."
+  cover: DSCF2186.JPG
+
+Canada/Toronto and Niagara/2026:
+  title: Toronto and Niagara
+  description: "Participated in ROSCon Toronto 2026 as a Diversity Scholar. Stayed 2 extra days to meet up with a few friends and visit Niagara Falls."
+  cover: DSCF5125.JPG
+
+Spain/Madrid:
+  title: Madrid
+  description: "Visited a couple of friends that were living in Madrid. Included an extra day trip to Segovia."
+  cover: DSCF2565.JPG
+
+United Kingdom/London:
+  title: London
+  description: "Finally met some online friends I had known for a decade. Got to visit a lot of places in London, Oxford and Bath. Watched Hadestown at West End."
+  cover: DSCF4136.JPG

@@ -1,6 +1,6 @@
 ---
 title: "Photography"
-description: "Travel and street photography by Gabriel Dorneles, mapped by where each photo was taken."
+description: "Photography by Gabriel Dorneles: people and places from my travels."
 ---
 
-Travel and street photography. Each pin on the map is a photo, and each place has its own album.
+This page shows some of my photography. I like to photograph people and places during my travels.

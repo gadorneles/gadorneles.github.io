@@ -1,0 +1,31 @@
+{{/* Trips over the years, oldest first. Albums with trip: false (or a home place) are left out. */}}
+{{ $base := site.Params.photography.imageBase | default "/photos" }}
+{{ $trips := slice }}
+{{ range . }}{{ if and .is_trip (or .start .year) }}{{ $trips = $trips | append (merge . (dict "sortkey" (.start | default (printf "%s-12-31" .year)))) }}{{ end }}{{ end }}
+{{ if $trips }}
+<section class="ph-wrap ph-section" aria-labelledby="ph-timeline-title">
+  <h2 class="section-title" id="ph-timeline-title">Timeline</h2>
+  <ol class="ph-tl">
+    {{ $year := "" }}
+    {{ range sort $trips "sortkey" "asc" }}
+      {{ $y := substr .sortkey 0 4 }}
+      {{ if ne $y $year }}
+        {{ if $year }}</ol></li>{{ end }}
+        <li class="ph-tl-year"><h3 class="ph-tl-year-label">{{ $y }}</h3><ol class="ph-tl-items">
+        {{ $year = $y }}
+      {{ end }}
+      <li class="ph-tl-item">
+        <a class="ph-tl-link" href="{{ printf "/photography/%s/" .slug | relURL }}">
+          <img class="ph-tl-thumb" src="{{ $base }}/{{ .cover.thumb }}" alt="" loading="lazy" decoding="async">
+          <span class="ph-tl-body">
+            <span class="ph-tl-title">{{ .title }}</span>
+            <span class="ph-tl-meta">{{ partial "photography/trip-dates.html" . }}{{ with .subtitle }} · {{ . }}{{ end }}</span>
+            <span class="ph-tl-count">{{ .count }} photo{{ if ne .count 1 }}s{{ end }}</span>
+          </span>
+        </a>
+      </li>
+    {{ end }}
+    {{ if $year }}</ol></li>{{ end }}
+  </ol>
+</section>
+{{ end }}

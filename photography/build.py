@@ -71,6 +71,7 @@ OUT_IMG = REPO / "static" / "photos"
 OUT_JSON = REPO / "data" / "photography.json"
 CACHE_DIR = REPO / ".photo-cache"
 MANIFEST = CACHE_DIR / "manifest.json"
+ALBUMS_FILE = HERE / "albums.yaml"  # titles, descriptions, covers: the file to edit by hand
 STATES_FILE = HERE / "states.json"  # Natural Earth admin-1 shapes, one TopoJSON per country
 OUT_STATES = OUT_IMG / "_states"
 MANIFEST_VERSION = 2
@@ -128,6 +129,7 @@ def split_date(name: str) -> tuple[str | None, str]:
 _COUNTRIES = json.loads((HERE / "countries.json").read_text(encoding="utf-8"))
 COUNTRY_NAMES: dict[str, str] = _COUNTRIES["names"]
 COUNTRY_ALIASES: dict[str, str] = _COUNTRIES["aliases"]
+CONTINENTS: dict[str, str] = _COUNTRIES.get("continents", {})
 
 
 def country_name(cc: str | None) -> str | None:
@@ -505,9 +507,15 @@ def lookup_place(name: str, cc: str | None) -> tuple[float, float] | None:
 
 def _lookup_one(name: str, cc: str | None) -> tuple[float, float] | None:
     key = norm_name(name)
-    hits = [r for r in cities_table() if norm_name(r["name"]) == key and (not cc or r["cc"] == cc)]
+    if not key:
+        return None
+    in_country = [r for r in cities_table() if not cc or r["cc"] == cc]
+    hits = [r for r in in_country if norm_name(r["name"]) == key]
+    if not hits:  # "Niagara" -> "Niagara Falls", "Foz" -> "Foz do Iguacu"
+        hits = [r for r in in_country if norm_name(r["name"]).startswith(key + " ")]
     if hits:  # prefer the city that also names its district/state (the capital, not a namesake village)
-        hits.sort(key=lambda r: -((norm_name(r["admin2"]) == key) + (key in norm_name(r["admin1"]))))
+        hits.sort(key=lambda r: (-((norm_name(r["admin2"]) == key) + (key in norm_name(r["admin1"]))),
+                                 len(r["name"])))
         return float(hits[0]["lat"]), float(hits[0]["lon"])
     for _, (x0, y0, x1, y1), _, names in states_for(cc):
         if key in names:
@@ -796,15 +804,41 @@ def trip_defaults(key: str) -> dict:
 # --------------------------------------------------------------------------- main
 
 
-def load_config(path: Path) -> tuple[dict, dict]:
+def album_key(folder: str) -> str:
+    """Match folder paths loosely: 'Brazil/João Pessoa/2026' == 'brasil/joao pessoa/2026/'.
+    The country part matches by country, so 'Spain', 'Espanha' and 'ES' are the same."""
+    parts = [p for p in str(folder).strip().strip("/").split("/") if p.strip()]
+    if not parts:
+        return ""
+    first = country_from_folder(parts[0]) or norm_name(parts[0])
+    return "/".join([first.lower()] + [norm_name(p) for p in parts[1:]])
+
+
+def album_options(table: dict, key: str) -> dict:
+    """Options for an album: an exact Country/Place/Year entry, or a Country/Place entry for any year."""
+    k = album_key(key)
+    if k in table:
+        return table[k]
+    parent, _, last = k.rpartition("/")
+    if parent and split_date(last)[0]:
+        return table.get(parent, {})
+    return {}
+
+
+def load_config(path: Path) -> tuple[dict, dict, dict]:
     raw = yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else {}
     raw = raw or {}
     cfg = {**DEFAULTS, **(raw.get("settings") or {})}
     trips = {}
     for t in raw.get("trips") or []:
         if t and "folder" in t:
-            trips[str(t["folder"]).strip("/")] = t
-    return cfg, trips
+            trips[album_key(t["folder"])] = t
+    albums = {}
+    if ALBUMS_FILE.exists():
+        data = yaml.safe_load(ALBUMS_FILE.read_text(encoding="utf-8")) or {}
+        for folder, opts in data.items():
+            albums[album_key(folder)] = {"_folder": str(folder), **(opts or {})}
+    return cfg, trips, albums
 
 
 def load_manifest(cfg: dict) -> dict:
@@ -817,6 +851,27 @@ def load_manifest(cfg: dict) -> dict:
     return {}
 
 
+def inspect(source, text: str, use_exiftool: bool) -> None:
+    """Print the location-related metadata actually stored in a few photos."""
+    files = [f for f in source.walk() if text.lower() in f["key"].lower()
+             and Path(f["name"]).suffix.lower() in EXTS][:3]
+    if not files:
+        log(f"No photos with '{text}' in their path.")
+        return
+    with tempfile.TemporaryDirectory(prefix="inspect-") as tmpdir:
+        for f in files:
+            path = source.fetch(f, Path(tmpdir))
+            log(f"\n{f['key']}")
+            if use_exiftool:
+                res = subprocess.run(["exiftool", "-G1", "-a", "-s", "-gps:all", "-xmp:GPS*", "-Composite:GPSPosition",
+                                      "-DateTimeOriginal", "-Make", "-Model", "-Software", str(path)],
+                                     capture_output=True, text=True)
+                log(res.stdout.strip() or "  (no tags)")
+            e = exif_pillow(path)
+            log(f"  -> GPS read by the site: {e['lat']}, {e['lon']}" if e["lat"] is not None
+                else "  -> no GPS in this file")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--config", default=str(HERE / "trips.yaml"))
@@ -826,9 +881,12 @@ def main() -> None:
     ap.add_argument("--force", action="store_true", help="re-download and re-encode every photo")
     ap.add_argument("--dry-run", action="store_true", help="report only, write nothing")
     ap.add_argument("--ci", action="store_true", help="exit quietly if Drive is not configured yet")
+    ap.add_argument("--inspect", metavar="TEXT",
+                    help="download up to 3 photos whose path contains TEXT and print their GPS/date tags")
     args = ap.parse_args()
 
-    cfg, trip_cfg = load_config(Path(args.config))
+    cfg, trip_cfg, album_cfg = load_config(Path(args.config))
+    home_places = {norm_name(p) for p in (cfg.get("home_places") or [])}
     aliases = {str(k): str(v) for k, v in (cfg.get("place_aliases") or {}).items()}
 
     folder_id = args.drive or os.environ.get("GDRIVE_FOLDER_ID") or cfg.get("drive_folder_id")
@@ -855,12 +913,21 @@ def main() -> None:
     if not HEIC:
         log("HEIC support: off (pip install pillow-heif to include .heic photos)")
 
+    if args.inspect:
+        inspect(source, args.inspect, use_exiftool)
+        return
+
     groups, folder_yaml, loose = group_trips(source.walk())
     for k in loose:
         log(f"  ! {k}: photos must be inside Country/Place/Year folders, skipped")
+    found = {album_key(k) for k in groups}
+    found |= {k.rpartition("/")[0] for k in found if split_date(k.rpartition("/")[2])[0]}
     for k in trip_cfg:
-        if k not in groups:
-            log(f"  ! trips.yaml lists '{k}' but there is no such trip folder")
+        if k not in found:
+            log(f"  ! trips.yaml lists '{k}' but there is no such album folder")
+    for k, opts in album_cfg.items():
+        if k not in found:
+            log(f"  ! albums.yaml lists '{opts['_folder']}' but there is no such album folder in Drive (yet)")
 
     manifest = {} if args.force else load_manifest(cfg)
     new_manifest: dict[str, dict] = {}
@@ -873,12 +940,15 @@ def main() -> None:
 
     for key in sorted(groups):
         d = trip_defaults(key)
-        tc = dict(trip_cfg.get(key, {}))
-        if key in folder_yaml:  # trip.yaml inside the trip folder wins over the repo
+        tc = dict(album_options(trip_cfg, key))
+        if key in folder_yaml:  # optional trip.yaml inside the album folder in Drive
             try:
                 tc.update(yaml.safe_load(source.read_text(folder_yaml[key])) or {})
             except Exception as e:  # a typo in trip.yaml should not break the site
                 log(f"  ! {key}/trip.yaml could not be read: {e}")
+        # photography/albums.yaml has the last word; empty values mean "use the default"
+        tc.update({k: v for k, v in album_options(album_cfg, key).items()
+                   if v not in (None, "") and not k.startswith("_")})
         if tc.get("hidden"):
             continue
         slug = slugify(tc.get("slug") or d["slug"])
@@ -1018,7 +1088,10 @@ def main() -> None:
         trip_photos.sort(key=lambda p: (p["date"] or "9999", p["file"]))
         dates = [p["date"] for p in trip_photos if p["date"]]
         cover_name = str(tc.get("cover") or "")
-        cover = next((p for p in trip_photos if cover_name and cover_name in (p["file"], Path(p["file"]).name)), None)
+        cover = next((p for p in trip_photos if cover_name and cover_name.lower() in
+                      (p["file"].lower(), Path(p["file"]).name.lower(), Path(p["file"]).stem.lower())), None)
+        if cover_name and not cover:
+            log(f"  ! cover '{cover_name}' is not in {key}; using the first photo")
         cover = cover or trip_photos[0]
         cc_counts = Counter(p["cc"] for p in trip_photos if p.get("cc"))
         city_counts = Counter(p["city"] for p in trip_photos if p.get("city"))
@@ -1038,6 +1111,7 @@ def main() -> None:
             "slug": slug, "folder": key,
             "title": title,
             "subtitle": subtitle,
+            "is_trip": bool(tc.get("trip", True)) and norm_name(d["place"] or "") not in home_places,
             "description": str(tc.get("description") or "").strip(),
             "start": start,
             "end": max(dates)[:10] if dates else start,
@@ -1045,6 +1119,7 @@ def main() -> None:
             "count": len(trip_photos),
             "cover": {k: cover[k] for k in ("id", "src", "thumb", "w", "h", "tw", "th")},
             "countries": [{"cc": cc, "name": country_name(cc)} for cc, _ in cc_counts.most_common()],
+            "continents": sorted({CONTINENTS.get(cc, "") for cc in cc_counts} - {""}),
             "cities": [c for c, _ in city_counts.most_common(6)],
             "states": [st for st, _ in state_counts.most_common()],
         })
@@ -1059,15 +1134,18 @@ def main() -> None:
     countries = {p["cc"] for p in photos if p.get("cc")}
     cities = {(p["city"], p.get("cc")) for p in photos if p.get("city")}
     states = {(p["state"], p.get("cc")) for p in photos if p.get("state")}
+    continents = {CONTINENTS[cc] for cc in countries if cc in CONTINENTS}
     years = sorted({p["date"][:4] for p in photos if p.get("date")})
     data = {
         "totals": {
             "photos": len(photos),
             "geotagged": sum(1 for p in photos if p["lat"] is not None),
+            "continents": len(continents),
             "countries": len(countries),
             "states": len(states),
             "cities": len(cities),
             "trips": len(trips),
+            "travels": sum(1 for t in trips if t["is_trip"]),
             "first_year": years[0] if years else None,
             "last_year": years[-1] if years else None,
         },

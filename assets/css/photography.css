@@ -233,3 +233,32 @@
 
 /* Chrome draws a focus box around a clicked country/state shape; the tooltip already shows it */
 .ph-map path.leaflet-interactive:focus { outline: none; }
+
+/* ----- timeline ----- */
+.ph-tl, .ph-tl-items { list-style: none; }
+.ph-tl { position: relative; padding-left: 1.75rem; }
+.ph-tl::before { content: ''; position: absolute; left: 6px; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--border); border-radius: 1px; }
+.ph-tl-year + .ph-tl-year { margin-top: 1.75rem; }
+.ph-tl-year-label { position: relative; font-size: 1.15rem; font-weight: 800; margin-bottom: 0.75rem; font-variant-numeric: tabular-nums; }
+.ph-tl-year-label::before {
+  content: ''; position: absolute; left: calc(-1.75rem + 1px); top: 50%; transform: translateY(-50%);
+  width: 12px; height: 12px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--bg-primary);
+}
+.ph-tl-items { display: flex; flex-direction: column; gap: 0.6rem; }
+.ph-tl-item { position: relative; }
+.ph-tl-item::before {
+  content: ''; position: absolute; left: calc(-1.75rem + 3px); top: 50%; transform: translateY(-50%);
+  width: 8px; height: 8px; border-radius: 50%; background: var(--bg-primary); border: 2px solid var(--text-secondary);
+}
+.ph-tl-link {
+  display: flex; align-items: center; gap: 0.9rem; color: var(--text-primary);
+  padding: 0.5rem; border: 1px solid var(--border); border-radius: var(--ph-radius); background: var(--bg-secondary);
+  transition: border-color 0.2s;
+}
+.ph-tl-link:hover { border-color: var(--accent); color: var(--text-primary); }
+.ph-tl-thumb { width: 64px; height: 64px; object-fit: cover; border-radius: 6px; flex: none; background: var(--bg-tertiary); }
+.ph-tl-body { display: flex; flex-direction: column; min-width: 0; }
+.ph-tl-title { font-weight: 700; }
+.ph-tl-meta, .ph-tl-count { color: var(--text-secondary); font-size: 0.85rem; }
+.ph-tl-count { font-size: 0.8rem; }
+.ph-section--last { padding-bottom: 4rem; }

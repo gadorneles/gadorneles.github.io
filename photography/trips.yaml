@@ -10,13 +10,15 @@ settings:
   max_size: 2048                 # long edge of published images (px)
   quality: 82                    # WebP quality
   coord_decimals: 3              # rounding of published coordinates (3 = ~100 m, 2 = ~1 km)
+  home_places:                   # albums at these places are not trips: left out of the timeline
+    - Rio Grande
   place_aliases:                 # fold suburbs/wards into the city name used in stats
     # Urayasu: Tokyo
     # Aoba-ku: Sendai
 
-# Per-album options. The easiest place for them is a `trip.yaml` file inside the
-# Drive folder itself (e.g. Photography/Brasil/João Pessoa/2026/trip.yaml) with the same keys.
-# Entries here are matched by folder path and are overridden by a trip.yaml in Drive.
+# Album titles, descriptions and covers live in photography/albums.yaml (easiest to edit).
+# The list below is the older way to set the same options and still works;
+# albums.yaml wins if both set something.
 trips:
   # - folder: Brasil/João Pessoa/2026
   #   title: João Pessoa               # default: the place folder name

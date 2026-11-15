@@ -1,7 +1,7 @@
 # Photography section
 
-`/photography/` shows a world map of where each photo was taken (shaded by country, and by state
-when you zoom in), stats, and one album per place and year. The photos live in Google Drive. GitHub Actions reads them, makes web-sized
+`/photography/` shows totals, a world map of where each photo was taken (shaded by country, and by
+state when you click a country), the albums (one per place and year), a timeline of trips, and stats. The photos live in Google Drive. GitHub Actions reads them, makes web-sized
 copies, and publishes the site. Nothing photo-related is committed to this repo.
 
 ```
@@ -12,7 +12,7 @@ Google Drive
         2026/                  <- year: album "João Pessoa", page /photography/joao-pessoa-2026/
           DSCF1234.jpg
           any subfolder/       <- optional; still part of this album
-          trip.yaml            <- optional: title, description, location ...
+          (titles, descriptions, covers: photography/albums.yaml in this repo)
     South Korea/
       Incheon/
         2026/
@@ -79,32 +79,47 @@ Any push to `main` also re-syncs from Drive.
 Upload **original files** (Drive keeps the EXIF). That is where the date, GPS, lens and Fujifilm
 film simulation come from.
 
-## Per-trip options: `trip.yaml`
+## Titles, descriptions and covers: `photography/albums.yaml`
 
-Create a text file named `trip.yaml` inside an album's year folder in Drive. All keys are optional:
+Each album has a block, keyed by its Drive folder:
 
 ```yaml
-title: João Pessoa and Cabedelo    # default: the place folder name ("<Country> <Year>" without one)
-description: Summer in the Northeast.   # shown on the page, Markdown allowed
-cover: DSCF1234.jpg                # default: first photo
-location: João Pessoa              # where photos without GPS go (default: the place folder name)
-hide_on_map: true                  # no photo pins for this album (e.g. your home town); still counted
-photos:                            # fixes for single photos, by file name
-  DSCF1250.jpg: {location: {lat: 34.9671, lon: 135.7727}, place: Fushimi Inari}
-  DSCF1260.jpg: {caption: Rain on Pontocho}
-  DSCF1301.jpg: {hidden: true}
+Brazil/João Pessoa/2026:
+  title: João Pessoa
+  description: A week in the **Northeast**.   # Markdown allowed
+  cover: DSCF0412.JPG                         # file name of the photo on the album card
 ```
 
-The same keys also work in `photography/trips.yaml` under `trips:` with
-`folder: Brasil/João Pessoa/2026`.
-A `trip.yaml` in Drive takes priority.
+Leave out the year (`Spain/Madrid:`) to match that place in any year. The country can be written in
+English or Portuguese. Edit, commit and push; the site rebuilds in a few minutes without
+re-processing photos. Empty values
+(`""`) mean "use the default". For a new album, copy a block and change the folder. The build log
+warns about blocks whose folder doesn't exist (check the spelling of the folder path).
+
+Other keys, for when you need them:
+
+```yaml
+  trip: false                        # not a trip: left out of the timeline
+  location: João Pessoa              # where photos without GPS go (default: the place folder name)
+  hide_on_map: true                  # no photo pins for this album; still counted in the stats
+  photos:                            # fixes for single photos, by file name
+    DSCF1250.jpg: {location: {lat: 34.9671, lon: 135.7727}, place: Fushimi Inari}
+    DSCF1260.jpg: {caption: Rain on Pontocho}
+    DSCF1301.jpg: {hidden: true}
+```
+
+Places listed under `home_places` in `photography/trips.yaml` (Rio Grande) are never treated as
+trips, so they stay out of the timeline whatever the year.
+
+The same keys also work in a `trip.yaml` file inside the album's folder in Drive; `albums.yaml`
+wins when both set something.
 
 ## Photos without GPS
 
 Each build log (Actions → the run → "Build photos from Google Drive") lists photos that are not on
 the map. They still appear in the gallery and still count for the country of their folder. This only
 happens when the place folder isn't a known city or state (e.g. "Road trip") or there is none. Add
-`location: City` to the album's `trip.yaml`, or give exact coordinates per photo (right-click a spot
+`location: City` to the album in `albums.yaml`, or give exact coordinates per photo (right-click a spot
 in Google Maps to copy them).
 
 Common reasons a photo has no GPS:
@@ -112,7 +127,15 @@ Common reasons a photo has no GPS:
   over Bluetooth with location sync on while you shoot.
 - **Google Photos**: a location shown there may be *estimated* from your location history and
   may not be in the downloaded file.
+- **Uploading from an Android phone**: Android's photo picker removes GPS from photos it hands to
+  apps, including the Google Drive app's upload button. Copy the photos to a computer over USB and
+  upload them at drive.google.com instead, or turn on "Include location" in the picker if your
+  phone shows that option.
 - **Sharing**: WhatsApp, and Android's "remove location data" share option, strip GPS.
+
+To check what a photo in Drive really contains:
+`python3 photography/build.py --credentials ~/keys/site-photos.json --inspect DSCF1234`
+(prints the GPS tags of up to 3 photos whose path contains the text).
 
 ## Previewing locally
 
@@ -149,7 +172,8 @@ npm run dev                                                          # http://lo
 | Path | Purpose |
 |---|---|
 | `photography/build.py` | Drive → EXIF, places, resizing, stats → `data/photography.json` |
-| `photography/trips.yaml` | Drive folder ID, settings, optional trip options |
+| `photography/albums.yaml` | album titles, descriptions, covers (edit this one) |
+| `photography/trips.yaml` | Drive folder ID, settings, home places |
 | `.github/workflows/hugo.yaml` | runs the build on demand and on push; deploys |
 | `content/photography/_index.md` | page title and intro text |
 | `content/photography/_content.gotmpl` | creates one page per trip from the JSON |

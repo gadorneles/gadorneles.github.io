@@ -10,13 +10,13 @@
   var BASE = cfg.base.replace(/\/$/, '');
   var url = function (p) { return BASE + '/' + p; };
 
-  // Sequential blue ramp, dark surface: low counts sit near the surface, high counts are brightest.
+  // Sequential blue ramp: lighter = fewer photos, darker = more (all steps clear the dark land color)
   var BUCKETS = [
-    { min: 1, color: '#184f95' },
-    { min: 5, color: '#256abf' },
-    { min: 20, color: '#3987e5' },
-    { min: 50, color: '#6da7ec' },
-    { min: 100, color: '#9ec5f4' }
+    { min: 1, color: '#b7d3f6' },
+    { min: 5, color: '#86b6ef' },
+    { min: 20, color: '#5598e7' },
+    { min: 50, color: '#2a78d6' },
+    { min: 100, color: '#1c5cab' }
   ];
   var ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
   var TILES = {
