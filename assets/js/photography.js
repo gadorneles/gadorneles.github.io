@@ -11,13 +11,47 @@
   var url = function (p) { return BASE + '/' + p; };
 
   // Sequential blue ramp: lighter = fewer photos, darker = more (all steps clear the dark land color)
-  var BUCKETS = [
-    { min: 1, color: '#b7d3f6' },
-    { min: 5, color: '#86b6ef' },
-    { min: 20, color: '#5598e7' },
-    { min: 50, color: '#2a78d6' },
-    { min: 100, color: '#1c5cab' }
-  ];
+  var RAMP = ['#b7d3f6', '#86b6ef', '#5598e7', '#2a78d6', '#1c5cab'];
+
+  // Color scale fitted to the data, so the lightest shade is the least-photographed place shown.
+  // Up to 5 distinct counts: one shade each. More: 5 log-spaced groups (photo counts are skewed).
+  function makeScale(values) {
+    var vals = values.filter(function (v) { return v > 0; }).sort(function (x, y) { return x - y; });
+    var uniq = vals.filter(function (v, i) { return i === 0 || v !== vals[i - 1]; });
+    var n = RAMP.length, groups = [];
+    if (uniq.length <= n) {
+      uniq.forEach(function (v, i) {
+        var pos = uniq.length === 1 ? 2 : Math.round(i * (n - 1) / (uniq.length - 1));
+        groups.push({ min: v, max: v, color: RAMP[pos] });
+      });
+    } else {
+      var lo = uniq[0], hi = uniq[uniq.length - 1], starts = [];
+      for (var i = 0; i < n; i++) {
+        var raw = lo * Math.pow(hi / lo, i / n);
+        var mag = Math.pow(10, Math.max(0, Math.floor(Math.log10(raw)) - 1));
+        starts.push(i === 0 ? lo : Math.max(Math.round(raw / mag) * mag, starts[i - 1] + 1));
+      }
+      starts.forEach(function (st, i) {
+        var end = i < n - 1 ? starts[i + 1] - 1 : Infinity;
+        var inside = uniq.filter(function (v) { return v >= st && v <= end; });
+        if (inside.length) groups.push({ min: inside[0], max: inside[inside.length - 1], from: st, color: RAMP[i] });
+      });
+    }
+    return {
+      color: function (v) {
+        var c = null;
+        groups.forEach(function (g) { if (v >= (g.from || g.min)) c = g.color; });
+        return c;
+      },
+      legend: function (unit) {
+        return groups.map(function (g) {
+          var label = g.min === g.max ? g.min : g.min + '–' + g.max;
+          return '<span class="ph-legend-item"><span class="ph-legend-swatch" style="background:' + g.color + '"></span>' + label + '</span>';
+        }).join('') + '<span class="ph-legend-unit">' + unit + '</span>';
+      }
+    };
+  }
+
   var ATTRIBUTION = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
   var TILES = {
     photos: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
@@ -242,21 +276,9 @@
     });
     var countryLayer = null;
     var legend = document.getElementById('ph-legend');
-    var color = function (n) {
-      var c = null;
-      BUCKETS.forEach(function (b) { if (n >= b.min) c = b.color; });
-      return c;
-    };
-
-    if (legend) {
-      var max = Math.max.apply(null, Object.values(counts).concat([0]));
-      var shown = BUCKETS.filter(function (b, k) { return k === 0 || b.min <= max; });
-      legend.innerHTML = shown.map(function (b, k) {
-        var next = shown[k + 1];
-        var label = next ? (next.min - 1 === b.min ? b.min : b.min + '–' + (next.min - 1)) : b.min + '+';
-        return '<span class="ph-legend-item"><span class="ph-legend-swatch" style="background:' + b.color + '"></span>' + label + '</span>';
-      }).join('') + '<span class="ph-legend-unit">photos</span>';
-    }
+    var countryScale = makeScale(Object.values(counts));
+    function showLegend(scale, unit) { if (legend) legend.innerHTML = scale.legend(unit); }
+    showLegend(countryScale, 'photos per country');
 
     // one setView (not fitBounds + setZoom) so the map redraws once, at the final view
     function zoomToPhotos(match, maxZoom, minZoom) {
@@ -274,6 +296,7 @@
     photos.forEach(function (p) {
       if (p.cc && p.state) { var k = p.cc + '|' + p.state; stateCounts[k] = (stateCounts[k] || 0) + 1; }
     });
+    var stateScale = makeScale(Object.values(stateCounts));
 
     function loadStates(cc) {
       if (stateLayers[cc] !== undefined) return Promise.resolve(stateLayers[cc]);
@@ -285,7 +308,7 @@
           style: function (f) {
             var n = stateCounts[cc + '|' + f.properties.n] || 0;
             return n
-              ? { fillColor: color(n), fillOpacity: 0.9, color: '#0d1117', weight: 0.8 }
+              ? { fillColor: stateScale.color(n), fillOpacity: 0.9, color: '#0d1117', weight: 0.8 }
               : { fillColor: '#21262d', fillOpacity: 0.55, color: '#30363d', weight: 0.6 };
           },
           onEachFeature: function (f, sl) {
@@ -309,7 +332,7 @@
       var n = counts[f.properties.a2] || 0;
       if (n && statesOn) return { fillOpacity: 0, color: '#484f58', weight: 1 }; // its states draw the fill
       return n
-        ? { fillColor: color(n), fillOpacity: 0.9, color: '#0d1117', weight: 0.8 }
+        ? { fillColor: countryScale.color(n), fillOpacity: 0.9, color: '#0d1117', weight: 0.8 }
         : { fillColor: '#21262d', fillOpacity: 0.55, color: '#30363d', weight: 0.5 };
     }
 
@@ -318,6 +341,7 @@
       if (want === statesOn) return;
       statesOn = want;
       if (countryLayer) countryLayer.setStyle(countryStyle);
+      showLegend(want ? stateScale : countryScale, want ? 'photos per state' : 'photos per country');
       Object.keys(counts).forEach(function (cc) {
         if (want) {
           loadStates(cc).then(function (l) { if (l && statesOn) l.addTo(map); });
