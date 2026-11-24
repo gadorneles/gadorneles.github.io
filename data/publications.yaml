@@ -1,17 +1,17 @@
 - title: "Viability Assessment of Digital Twinning for Safety-Critical Industrial Applications: Tower Crane Case Study"
   authors: "Juliana Dos Santos, Gabriel Dorneles, Murilo Bicho, Tony Froes, Richard De Assis, Pedro Edom, Marcos Rodrigues, Eder Gonçalves, Marcelo Pias, Silvia Botelho"
-  venue: "IEEE Access"
+  venue: "IEEE Access, vol. 14, pp. 177154-177172"
   year: 2026
   type: "journal"
   url: "https://ieeexplore.ieee.org/document/11754930"
-  note: "Early Access"
   bibtex: |
     @ARTICLE{11754930,
       author={Dos Santos, Juliana and Dorneles, Gabriel and Bicho, Murilo and Froes, Tony and De Assis, Richard and Edom, Pedro and Rodrigues, Marcos and Gonçalves, Eder and Pias, Marcelo and Botelho, Silvia},
       journal={IEEE Access},
       title={Viability Assessment of Digital Twinning for Safety-Critical Industrial Applications: Tower Crane Case Study},
       year={2026},
-      pages={1-1},
+      volume={14},
+      pages={177154-177172},
       doi={10.1109/ACCESS.2026.3747443}}
 
 - title: "BORISAgent: An Architecture for LLM-Based Task Planning in Domestic Service Robots"
