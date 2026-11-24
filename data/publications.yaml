@@ -67,23 +67,24 @@
 
 - title: "A Review on Dataset Collection Strategies for Learning Methods in Robotic Manipulation"
   authors: "Gabriel Amaral Dorneles, Kristofer Stift Kappel, Stephanie Loi Brião, João Francisco de Souza Santos Lemos, Rodrigo da Silva Guerra, Paulo Lilles Jorge Drews Junior"
-  venue: "RoboCup 2025: Robot World Cup XXVIII. Lecture Notes in Computer Science, vol 16460. Springer, Cham."
-  year: 2026
+  venue: "RoboCup 2025: Robot World Cup XXVIII. Lecture Notes in Computer Science, vol 16460, pp. 196-207. Springer, Cham."
+  year: 2027
   type: "book_chapter"
+  url: "https://link.springer.com/chapter/10.1007/978-3-032-24870-1_17"
   pdf: "/papers/Review_on_Dataset_Collection_Strategies_for_Learning_Methods_in_Robotic_Manipulation.pdf"
-  note: "To appear, due May 2026"
   bibtex: |
     @inproceedings{dorneles2025review,
       author={Gabriel Amaral Dorneles and Kristofer Stift Kappel and Stephanie Loi Briao and Joao Francisco de Souza Santos Lemos and Rodrigo da Silva Guerra and Paulo Lilles Jorge Drews Junior},
+      editor={Fontes Magalh{\~a}es Mascarenhas, A. P. and Ferrein, A. and Villing, R.},
       title={A Review on Dataset Collection Strategies for Learning Methods in Robotic Manipulation},
       booktitle={RoboCup 2025: Robot World Cup XXVIII},
       series={Lecture Notes in Computer Science},
       volume={16460},
+      pages={196--207},
       publisher={Springer, Cham},
-      year={2026},
-      isbn={978-3-032-24869-5},
-      issn={0302-9743},
-      note={To appear, due May 2026}
+      year={2027},
+      isbn={978-3-032-24870-1},
+      doi={10.1007/978-3-032-24870-1_17}
     }
 
 - title: "AffordGen: Affordance-Based Dataset Generator for Robot Manipulation Learning"
